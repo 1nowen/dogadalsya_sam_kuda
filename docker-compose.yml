@@ -1,0 +1,52 @@
+services:
+  kafka:
+    image: apache/kafka:3.7.0
+    container_name: kafka
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:29093
+      KAFKA_LISTENERS: CONTROLLER://0.0.0.0:29093,PLAINTEXT_HOST://0.0.0.0:9092,PLAINTEXT://0.0.0.0:19092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT_HOST://localhost:9092,PLAINTEXT://kafka:19092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      CLUSTER_ID: 4L6g3nShT-eMCtK--X86sw
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_LOG_RETENTION_MS: 604800000
+    networks:
+      - payment-stream
+
+  producer:
+    image: producer:latest
+    restart: on-failure
+    depends_on:
+      - kafka
+    environment:
+      KAFKA_BOOTSTRAP_SERVERS: kafka:19092
+    volumes:
+      - ./config:/app/config:ro
+    networks:
+      - payment-stream
+
+  consumer:
+    image: consumer:latest
+    restart: on-failure
+    depends_on:
+      - kafka
+    environment:
+      KAFKA_BOOTSTRAP_SERVERS: kafka:19092
+      SPARK_CHECKPOINT_LOCATION: /app/checkpoint
+      SPARK_REJECTED_TRANSACTIONS_PATH: /app/output/rejected-transactions
+      SPARK_TRANSACTIONS_LOG_PATH: /app/output/transactions.log
+    volumes:
+      - ./config:/app/config:ro
+      - ./checkpoint:/app/checkpoint
+      - ./output:/app/output
+    networks:
+      - payment-stream
+
+networks:
+  payment-stream:
+    name: payment-stream

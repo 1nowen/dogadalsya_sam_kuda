@@ -1,0 +1,34 @@
+# sbt / Scala
+target/
+project/target/
+project/project/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+.bsp/
+.bloop/
+.metals/
+.sbt-isolated/
+**/metals.sbt
+
+# ОС / JVM
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+hs_err_pid*.log
+replay_pid*.txt
+
+# Временные файлы
+*.log
+*.tmp
+.cache/
+
+# Тома Spark: в git только .gitkeep (см. docker-compose.yml)
+checkpoint/*
+!checkpoint/.gitkeep
+output/*
+!output/.gitkeep
