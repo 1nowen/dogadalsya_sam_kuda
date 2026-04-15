@@ -1,22 +1,10 @@
-# Репозиторий и локальные инструменты
-.git/
-.bloop/
-**/.bloop/
-.metals/
-.sbt-isolated/
-
-# Артефакты sbt (образ собирается из stage в target конкретного модуля)
+.git
+.bloop
+.metals
+**/.bloop
 **/target/
+.sbt-isolated
 
-# Данные рантайма на хосте (в Compose монтируются отдельно)
-checkpoint/
-output/
-
-# Не используются слоем приложения в образе
-docker/
-scripts/
-
-# Документация и конфиг с хоста (в Compose config монтируется в /app/config)
 *.md
 *.txt
 *.conf

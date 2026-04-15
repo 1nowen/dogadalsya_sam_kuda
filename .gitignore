@@ -1,9 +1,9 @@
-# sbt / Scala
+# --- sbt / Scala ---
 target/
 project/target/
 project/project/
 
-# IDE
+# --- IDE / tooling (генерируется локально) ---
 .idea/
 *.iml
 .vscode/
@@ -13,7 +13,12 @@ project/project/
 .sbt-isolated/
 **/metals.sbt
 
-# ОС / JVM
+# --- Markdown и txt в корне: в репозитории только README.md ---
+*.md
+!README.md
+/*.txt
+
+# --- OS / JVM ---
 .DS_Store
 Thumbs.db
 *.swp
@@ -22,12 +27,12 @@ Thumbs.db
 hs_err_pid*.log
 replay_pid*.txt
 
-# Временные файлы
+# --- Временные файлы ---
 *.log
 *.tmp
 .cache/
 
-# Тома Spark: в git только .gitkeep (см. docker-compose.yml)
+# --- Docker bind mounts: в репозитории только заглушки .gitkeep ---
 checkpoint/*
 !checkpoint/.gitkeep
 output/*

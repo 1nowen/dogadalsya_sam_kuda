@@ -33,17 +33,23 @@ lazy val dockerAppBaseSettings = Seq(
   Docker / packageName := name.value
 )
 
+lazy val testConsoleSettings = Seq(
+  Test / fork := true
+)
+
 lazy val common = (project in file("common"))
   .settings(
     name := "payment-common",
     libraryDependencies ++= Dependencies.common ++ Dependencies.test
   )
+  .settings(testConsoleSettings: _*)
 
 lazy val producerApp = (project in file("producer"))
   .dependsOn(common)
   .enablePlugins(JavaAppPackaging, DockerPlugin)
   .settings(
     name := "producer",
+    libraryDependencies ++= Dependencies.producerSlf4j,
     Compile / mainClass := Some("com.paymentstream.producer.ProducerMain")
   )
   .settings(dockerAppBaseSettings: _*)
@@ -54,7 +60,7 @@ lazy val consumerApp = (project in file("consumer"))
   .enablePlugins(JavaAppPackaging, DockerPlugin)
   .settings(
     name := "consumer",
-    libraryDependencies ++= Dependencies.sparkStack,
+    libraryDependencies ++= Dependencies.sparkStack ++ Dependencies.testWithMockito,
     Compile / mainClass := Some("com.paymentstream.consumer.ConsumerMain")
   )
   .settings(dockerAppBaseSettings: _*)
@@ -62,6 +68,8 @@ lazy val consumerApp = (project in file("consumer"))
     "CONFIG_FILE" -> "/app/config/application.conf",
     "JAVA_TOOL_OPTIONS" -> sparkDockerJavaOptions.mkString(" ")
   ))
+  .settings(testConsoleSettings: _*)
+  .settings(Test / javaOptions ++= sparkDockerJavaOptions)
 
 lazy val root = (project in file("."))
   .aggregate(common, producerApp, consumerApp)
