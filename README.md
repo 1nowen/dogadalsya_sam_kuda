@@ -11,8 +11,9 @@
 
 ## Запуск тестов
 
-`sbt test` (или `tests.bat`) проходит без Kafka и без отдельной настройки Hadoop: в consumer Mockito имитирует пакет JSON-строк (`ConsumerMockSpec`), отдельно гоняются небольшие Spark-проверки на локальном наборе строк (`TransactionStreamProcessorSpec`).
-В тестах в выводе `sbt` рядом с ними дублируются формулировки из исходников (имя класса и текст проверки в коде).
+`sbt test` (или `tests.bat`) проходит без Kafka и без отдельной настройки Hadoop: в consumer Mockito имитирует пакет JSON-строк (`ConsumerMockSpec`), отдельно гоняются небольшие Spark-проверки на локальном наборе строк (`TransactionStreamProcessorSpec`). На Windows в логах Spark может появляться предупреждение про winutils — на эти тесты это обычно не влияет; при сбоях файловой системы удобнее WSL2 или Linux в Docker.
+
+Ниже — все **6** тестов; в выводе `sbt` рядом с ними дублируются формулировки из исходников (имя класса и текст проверки в коде).
 
 ### 1. `DataDictionariesSpec` — выбор из словаря (`pick`)
 
@@ -36,7 +37,7 @@
 
 ### 5. `TransactionStreamProcessorSpec` — фильтр положительной суммы
 
-- **Что проверяет:** Spark-фильтр `filterPositiveAmount` оставляет только строки с `amount > 0`.
+- **Что проверяет:** Spark-фильтр `filterPositiveAmount` оставляет только строки с `amount > 0` (как в потоковом пайплайне).
 - **Как проверяет:** локальная сессия Spark (`local[1]`); таблица с одной колонкой `amount` и строками `0`, `5`, `-1`, `null`; после фильтра в множестве значений остаётся только `5`.
 
 ### 6. `TransactionStreamProcessorSpec` — итоговая выручка за пакет данных
@@ -46,7 +47,9 @@
 
 ## Быстрый запуск
 
-Запустить `run.bat` из корня репозитория.
+### Windows
+
+Запустите `run.bat` из корня репозитория.
 
 Скрипт:
 
@@ -60,8 +63,8 @@
 
 ```text
 ├── build.sbt                    # Три модуля: common, producerApp, consumerApp
-├── tests.bat                    # `sbt test`
-├── run.bat                      # образы → compose → поток логов
+├── tests.bat                    # Windows: одна команда `sbt test`
+├── run.bat                      # Windows: образы → compose → поток логов
 ├── project/
 │   ├── Dependencies.scala       # Версии; Log4j2 только у consumer (Spark); у producer — slf4j-nop для kafka-clients
 │   ├── plugins.sbt              # sbt-native-packager, scalafmt
