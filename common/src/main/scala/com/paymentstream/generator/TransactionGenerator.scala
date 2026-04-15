@@ -10,9 +10,8 @@ import com.paymentstream.model.Transaction
 
 object TransactionGenerator {
 
-  // ~10% с amount = 0 (некорректная транзакция для consumer / incorrectTransactionCount).
-  def generate: UIO[Transaction] = ZIO.succeed {
-    val randomNumberGenerator = new Random()
+  /** Deterministic transaction from a RNG (used by `generate` and unit tests). */
+  def buildTransaction(randomNumberGenerator: Random): Transaction = {
     val productType = DataDictionaries.pick(DataDictionaries.productTypes)(randomNumberGenerator)
     val categories = DataDictionaries.productCategories(productType)
     val amount =
@@ -28,4 +27,7 @@ object TransactionGenerator {
       timestamp = Instant.now()
     )
   }
+
+  // ~10% с amount = 0 (некорректная транзакция для consumer / incorrectTransactionCount).
+  def generate: UIO[Transaction] = ZIO.succeed(buildTransaction(new Random()))
 }

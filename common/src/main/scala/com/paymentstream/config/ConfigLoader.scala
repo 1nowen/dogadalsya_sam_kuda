@@ -5,7 +5,6 @@ import java.nio.file.{Path, Paths}
 import pureconfig._
 import pureconfig.error.ConfigReaderFailures
 import pureconfig.generic.auto._
-import zio.{TaskLayer, ZIO, ZLayer}
 
 object ConfigLoader {
 
@@ -20,8 +19,4 @@ object ConfigLoader {
 
   def loadOrThrow(): AppConfig = load()
     .fold(failures => throw new IllegalArgumentException(failures.prettyPrint()), identity)
-
-  val layer: TaskLayer[AppConfig] = ZLayer.fromZIO(ZIO.fromEither(load()).mapError(failures =>
-    new IllegalArgumentException(failures.prettyPrint())
-  ))
 }

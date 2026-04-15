@@ -12,10 +12,13 @@ if errorlevel 1 (
 )
 
 echo [2/3] Compose cycle
-docker compose down
-docker compose up -d --force-recreate
+docker compose down --remove-orphans
+docker compose up -d --force-recreate --remove-orphans
 if errorlevel 1 (
   echo compose failed
+  echo If you see "container name ... is already in use", stop or remove the old container, e.g.:
+  echo   docker rm -f kafka
+  echo then run this script again.
   exit /b 1
 )
 
